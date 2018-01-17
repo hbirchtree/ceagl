@@ -6,7 +6,7 @@ extern void* appdelegate_ptr;
 EGLView* current_view = NULL;
 
 @implementation EGLView {
-    AppDelegate* mAppDelegate;
+    id<EGLAppDelegate> mAppDelegate;
     EAGLContext* mContext;
     GLKView* mView;
 }
@@ -24,7 +24,7 @@ EGLView* current_view = NULL;
 
 - (bool) createContext:(uint32_t)contextVer
 {
-    self->mAppDelegate = (AppDelegate*)appdelegate_ptr;
+    self->mAppDelegate = (id<EGLAppDelegate>)appdelegate_ptr;
 
     NSUInteger renderApi = kEAGLRenderingAPIOpenGLES2;
     
@@ -80,7 +80,7 @@ EGLView* current_view = NULL;
     [super dealloc];
 }
 
-- (AppDelegate*) getApp
+- (id<EGLAppDelegate>) getApp
 {
     return self->mAppDelegate;
 }

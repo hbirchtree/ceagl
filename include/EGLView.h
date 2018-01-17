@@ -8,13 +8,17 @@
 
 #pragma once
 
+#import <UIKit/UIKit.h>
+#import <GLKit/GLKit.h>
+#import <GLKit/GLKViewController.h>
+#import <GLKit/GLKView.h>
+
 #include <CEAGL/eagl_types.h>
 
-#import "../../windowing/glkit/AppDelegate.h"
-
-#include "GLKit/GLKit.h"
-#include "GLKit/GLKViewController.h"
-#include "GLKit/GLKView.h"
+@protocol EGLAppDelegate <UIApplicationDelegate,
+                          GLKViewDelegate,
+                          GLKViewControllerDelegate>
+@end
 
 @interface EGLView : NSObject {
     
@@ -29,7 +33,7 @@
 
     - (void) dealloc;
 
-    - (AppDelegate*) getApp;
+    - (id<EGLAppDelegate>) getApp;
     - (EAGLContext*) getContext;
     - (GLKView*) getView;
 
