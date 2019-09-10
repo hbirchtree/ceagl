@@ -226,11 +226,13 @@ EGLboolean eglMakeCurrent(EGLDisplay display, EGLSurface surfaceDraw,
 }
 
 
-void eglDestroySurface(EGLDisplay, EGLSurface)
+EGLboolean eglDestroySurface(EGLDisplay, EGLSurface)
 {
+    return EGL_TRUE;
 }
-void eglDestroyContext(EGLDisplay, EGLContext)
+EGLboolean eglDestroyContext(EGLDisplay, EGLContext)
 {
+    return EGL_TRUE;
 }
 
 EGLboolean eglTerminate(EGLDisplay display)

@@ -54,8 +54,8 @@ EGLboolean eglMakeCurrent(EGLDisplay display, EGLSurface surfaceDraw,
 
 
 // Destructors
-void eglDestroySurface(EGLDisplay display, EGLSurface surface);
-void eglDestroyContext(EGLDisplay display, EGLContext context);
+EGLboolean eglDestroySurface(EGLDisplay display, EGLSurface surface);
+EGLboolean eglDestroyContext(EGLDisplay display, EGLContext context);
 
 EGLboolean eglTerminate(EGLDisplay display);
 
@@ -67,3 +67,8 @@ EGLint eglGetError(void);
 #define EGL_NO_DISPLAY nullptr
 
 #define EGL_DEFAULT_DISPLAY nullptr
+
+#define EGL_VERSION_1_0
+#define EGL_VERSION_1_1
+#define EGL_VERSION_1_2
+#define EGL_VERSION_1_3
