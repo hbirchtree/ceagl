@@ -5,7 +5,7 @@
 
 EGLDisplay eglGetDisplay(EGLNativeDisplayType nativeDisplay)
 {
-    if(!current_view)
+    if(current_view)
         return current_view;
     return [EGLView createView];
 }
