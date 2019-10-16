@@ -1,53 +1,51 @@
 #import <Foundation/Foundation.h>
 #import <EGLView.h>
 
-extern void* appdelegate_ptr;
+extern void* uikit_appdelegate;
 
 EGLView* current_view = NULL;
 
-@implementation EGLView {
-    id<EGLAppDelegate> mAppDelegate;
-    EAGLContext* mContext;
-    GLKView* mView;
-}
+@implementation EGLView
 
 + (EGLView*) createView
 {
-    if(current_view)
-    {
-        [current_view dealloc];
-    }
-
-    current_view = [[EGLView alloc] init];
+    if(!current_view)
+        current_view = [[EGLView alloc] init];
     return current_view;
 }
 
-- (bool) createContext:(uint32_t)contextVer
+- (BOOL) createContext:(uint32_t)contextVer
 {
-    self->mAppDelegate = (id<EGLAppDelegate>)appdelegate_ptr;
+    if(self.appDelegate)
+        return YES;
+    
+    self.appDelegate = (id<EGLAppDelegate>)uikit_appdelegate;
 
     NSUInteger renderApi = kEAGLRenderingAPIOpenGLES2;
     
     if(contextVer == EGL_OPENGL_ES3_BIT)
         renderApi = kEAGLRenderingAPIOpenGLES3;
 
-    self->mContext = [[EAGLContext alloc] initWithAPI:renderApi];
+    self.eaglContext = [[EAGLContext alloc] initWithAPI:renderApi];
     
-    return true;
+    return YES;
 }
 
-- (bool) createView
+- (BOOL) createView
 {
+    if(self.view)
+        return YES;
+    
     GLKView* view = [[GLKView alloc] initWithFrame:
                             [[UIScreen mainScreen] bounds]];
     
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     view.drawableStencilFormat = GLKViewDrawableStencilFormat8;
     
-    view.context = self->mContext;
-    view.delegate = self->mAppDelegate;
+    view.context = self.eaglContext;
+    view.delegate = self.appDelegate;
     
-    self->mView = view;
+    self.view = view;
     
     GLKViewController* vc = nil;
     
@@ -58,41 +56,11 @@ EGLView* current_view = NULL;
     vc.view = view;
     vc.preferredFramesPerSecond = 60;
     
-    vc.delegate = self->mAppDelegate;
+    vc.delegate = self.appDelegate;
     
-    self->mAppDelegate.window.rootViewController = vc;
+    self.appDelegate.window.rootViewController = vc;
 
-    return true;
-}
-
-- (void) dealloc
-{
-    GLKViewController* vc = (GLKViewController*)self->mAppDelegate
-                                    .window.rootViewController;
-    
-    vc.view = nil;
-    
-    current_view = nil;
-    
-    self->mAppDelegate.window.rootViewController = \
-                                        [[UIViewController alloc] init];
-    
-    [super dealloc];
-}
-
-- (id<EGLAppDelegate>) getApp
-{
-    return self->mAppDelegate;
-}
-
-- (EAGLContext*) getContext
-{
-    return self->mContext;
-}
-
-- (GLKView*) getView
-{
-    return self->mView;
+    return YES;
 }
 
 @end

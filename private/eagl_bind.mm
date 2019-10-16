@@ -5,6 +5,8 @@
 
 EGLDisplay eglGetDisplay(EGLNativeDisplayType nativeDisplay)
 {
+    if(!current_view)
+        return current_view;
     return [EGLView createView];
 }
 
@@ -26,10 +28,10 @@ EGLboolean eglQuerySurface(EGLDisplay display, EGLSurface surface,
     switch(attr)
     {
     case EGL_WIDTH:
-        *value = (int)[[view getView] drawableWidth];
+        *value = (int)[view.view drawableWidth];
         break;
     case EGL_HEIGHT:
-        *value = (int)[[view getView] drawableHeight];
+        *value = (int)[view.view drawableHeight];
         break;
     case EGL_MAX_SWAP_INTERVAL:
         *value = 1;
@@ -126,7 +128,7 @@ EGLboolean eglGetConfigAttrib(EGLDisplay display, EGLConfig cfg,
 {
     EGLView* view = (EGLView*)display;
     
-    GLKViewDrawableColorFormat c_fmt = [[view getView] drawableColorFormat];
+    GLKViewDrawableColorFormat c_fmt = [view.view drawableColorFormat];
     
     switch(attr)
     {
@@ -145,10 +147,10 @@ EGLboolean eglGetConfigAttrib(EGLDisplay display, EGLConfig cfg,
     
     
     case EGL_DEPTH_SIZE:
-        *value = DepthFormatToInt([[view getView] drawableDepthFormat]);
+        *value = DepthFormatToInt([view.view drawableDepthFormat]);
         break;
     case EGL_STENCIL_SIZE:
-        *value = StencilFormatToInt([[view getView] drawableStencilFormat]);
+        *value = StencilFormatToInt([view.view drawableStencilFormat]);
         break;
         
     case EGL_BUFFER_SIZE:
@@ -158,7 +160,7 @@ EGLboolean eglGetConfigAttrib(EGLDisplay display, EGLConfig cfg,
         break;
         
     case EGL_SAMPLES:
-        *value = MultisampleToInt([[view getView] drawableMultisample]);
+        *value = MultisampleToInt([view.view drawableMultisample]);
         break;
     
     default:
@@ -181,7 +183,7 @@ EGLContext eglCreateContext(EGLDisplay display, EGLConfig cfg,
     if(display)
     {
         EGLView* view = (EGLView*)display;
-        return [view getContext];
+        return view.eaglContext;
     }
     return EGL_NO_CONTEXT;
 }
@@ -192,9 +194,9 @@ EGLSurface eglCreateWindowSurface(EGLDisplay display, EGLConfig cfg,
     if(display)
     {
         EGLView* view = (EGLView*)display;
-        [view createView];
-        
-        return [view getView];
+        if(!view.view)
+            [view createView];
+        return view.view;
     }
     return EGL_NO_SURFACE;
 }
@@ -237,17 +239,6 @@ EGLboolean eglDestroyContext(EGLDisplay, EGLContext)
 
 EGLboolean eglTerminate(EGLDisplay display)
 {
-    EGLView* view = (EGLView*)display;
-    
-    if([EAGLContext currentContext])
-    {
-        EAGLContext* ctx = [EAGLContext currentContext];
-        [EAGLContext setCurrentContext:nil];
-        [ctx dealloc];
-    }
-    
-    [view dealloc];
-    
     return EGL_TRUE;
 }
 

@@ -8,34 +8,20 @@
 
 #pragma once
 
-#import <UIKit/UIKit.h>
-#import <GLKit/GLKit.h>
-#import <GLKit/GLKViewController.h>
-#import <GLKit/GLKView.h>
+#import <objective_coffee/protocols/eglappdelegate.h>
 
 #include <CEAGL/eagl_types.h>
 
-@protocol EGLAppDelegate <UIApplicationDelegate,
-                          GLKViewDelegate,
-                          GLKViewControllerDelegate>
-@end
+@interface EGLView : NSObject
 
-@interface EGLView : NSObject {
-    
-    
-    
-}
-    + (EGLView*) createView;
+@property (retain) id<EGLAppDelegate> appDelegate;
+@property (retain) EAGLContext* eaglContext;
+@property (retain) GLKView* view;
 
-    - (bool) createContext: (uint32_t)contextVer;
++ (EGLView*) createView;
 
-    - (bool) createView;
-
-    - (void) dealloc;
-
-    - (id<EGLAppDelegate>) getApp;
-    - (EAGLContext*) getContext;
-    - (GLKView*) getView;
+- (BOOL) createContext: (uint32_t)contextVer;
+- (BOOL) createView;
 
 @end
 
