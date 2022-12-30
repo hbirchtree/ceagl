@@ -6,25 +6,30 @@
 EGLDisplay eglGetDisplay(EGLNativeDisplayType nativeDisplay)
 {
     if(current_view)
-        return current_view;
-    return [EGLView createView];
+        return (__bridge void*)current_view;
+    return (__bridge void*)[EGLView createView];
 }
 
 EGLboolean eglInitialize(EGLDisplay display, void*, void*)
 {
     if(display)
     {
-        EGLView* view = (EGLView*)display;
-        [view createContext: EGL_OPENGL_ES2_BIT];
+        EGLView* view = (__bridge EGLView*)display;
+        [view createContext: EGL_OPENGL_ES3_BIT];
         return EGL_TRUE;
     }
     return EGL_FALSE;
 }
 
+EGLDisplay eglGetCurrentDisplay()
+{
+    return (__bridge void*)current_view;
+}
+
 EGLboolean eglQuerySurface(EGLDisplay display, EGLSurface surface,
                            EGLint attr, EGLint* value)
 {
-    EGLView* view = (EGLView*)display;
+    EGLView* view = (__bridge EGLView*)display;
     switch(attr)
     {
     case EGL_WIDTH:
@@ -51,7 +56,7 @@ const char* eglQueryString(EGLDisplay display, EGLint attr)
     case EGL_VENDOR:
         return "Apple EAGL";
     case EGL_VERSION:
-        return "1.2 Coffee EAGL-to-EGL layer";
+        return "1.3 (Coffee EAGL-to-EGL layer)";
     case EGL_EXTENSIONS:
         return "";
     case EGL_CLIENT_APIS:
@@ -126,7 +131,7 @@ EGLboolean eglGetConfigAttrib(EGLDisplay display, EGLConfig cfg,
                               EGLint attr,
                               EGLint* value)
 {
-    EGLView* view = (EGLView*)display;
+    EGLView* view = (__bridge EGLView*)display;
     
     GLKViewDrawableColorFormat c_fmt = [view.view drawableColorFormat];
     
@@ -182,8 +187,21 @@ EGLContext eglCreateContext(EGLDisplay display, EGLConfig cfg,
 {
     if(display)
     {
-        EGLView* view = (EGLView*)display;
-        return view.eaglContext;
+        auto version = EGL_OPENGL_ES2_BIT;
+        auto attrib = cfg_pref;
+        while(*attrib != EGL_NONE)
+        {
+            if(*attrib == EGL_CONTEXT_CLIENT_VERSION ||
+               *attrib == EGL_CONTEXT_MAJOR_VERSION)
+            {
+                version = attrib[1] == 3 ? EGL_OPENGL_ES3_BIT : EGL_OPENGL_ES2_BIT;
+            }
+            attrib += 2;
+        }
+
+        EGLView* view = (__bridge EGLView*)display;
+//        [view createContext: version];
+        return (__bridge void*)view.eaglContext;
     }
     return EGL_NO_CONTEXT;
 }
@@ -193,10 +211,10 @@ EGLSurface eglCreateWindowSurface(EGLDisplay display, EGLConfig cfg,
 {
     if(display)
     {
-        EGLView* view = (EGLView*)display;
+        EGLView* view = (__bridge EGLView*)display;
         if(!view.view)
             [view createView];
-        return view.view;
+        return (__bridge void*)view.view;
     }
     return EGL_NO_SURFACE;
 }
@@ -221,7 +239,7 @@ EGLboolean eglMakeCurrent(EGLDisplay display, EGLSurface surfaceDraw,
 {
     if(context)
     {
-        EAGLContext* ctxt = (EAGLContext*)context;
+        EAGLContext* ctxt = (__bridge EAGLContext*)context;
         return [EAGLContext setCurrentContext:ctxt];
     }
     return EGL_FALSE;

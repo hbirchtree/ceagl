@@ -37,6 +37,9 @@ EGLboolean eglGetConfigAttrib(EGLDisplay display, EGLConfig cfg,
 EGLboolean eglChooseConfig(EGLDisplay disp, EGLint const* preferred,
                            EGLConfig* config, EGLint numConfigs,
                            EGLint* pnumConfigs);
+void* eglGetProcAddress(const char* name) { return nullptr; }
+
+EGLDisplay eglGetCurrentDisplay();
 
 // Constructors
 EGLContext eglCreateContext(EGLDisplay display, EGLConfig cfg,
@@ -72,3 +75,19 @@ EGLint eglGetError(void);
 #define EGL_VERSION_1_1
 #define EGL_VERSION_1_2
 #define EGL_VERSION_1_3
+
+#define EGL_SUCCESS             0x0000
+#define EGL_BAD_ACCESS          0x0101
+#define EGL_BAD_ALLOC           0x0102
+#define EGL_BAD_ATTRIBUTE       0x0103
+#define EGL_BAD_CONFIG          0x0104
+#define EGL_BAD_CONTEXT         0x0105
+#define EGL_BAD_CURRENT_SURFACE 0x0106
+#define EGL_BAD_DISPLAY         0x0107
+#define EGL_BAD_MATCH           0x0108
+#define EGL_BAD_NATIVE_PIXMAP   0x0109
+#define EGL_BAD_NATIVE_WINDOW   0x0110
+#define EGL_BAD_PARAMETER       0x0111
+#define EGL_BAD_SURFACE         0x0112
+
+#define EGL_NOT_INITIALIZED     0x0101

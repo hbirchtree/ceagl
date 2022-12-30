@@ -16,29 +16,35 @@ EGLView* current_view = NULL;
 
 - (BOOL) createContext:(uint32_t)contextVer
 {
+    NSLog(@"EGLView::createContext");
     if(self.appDelegate)
         return YES;
     
-    self.appDelegate = (id<EGLAppDelegate>)uikit_appdelegate;
+    self.appDelegate = (__bridge id<EGLAppDelegate>)uikit_appdelegate;
 
     NSUInteger renderApi = kEAGLRenderingAPIOpenGLES2;
     
     if(contextVer == EGL_OPENGL_ES3_BIT)
         renderApi = kEAGLRenderingAPIOpenGLES3;
 
-    self.eaglContext = [[EAGLContext alloc] initWithAPI:renderApi];
+    self.eaglContext = [EAGLContext alloc];
+    self.eaglContext = [self.eaglContext initWithAPI: renderApi];
+    [EAGLContext setCurrentContext: self.eaglContext];
     
     return YES;
 }
 
 - (BOOL) createView
 {
+    NSLog(@"EGLView::createView");
     if(self.view)
         return YES;
     
     GLKView* view = [[GLKView alloc] initWithFrame:
-                            [[UIScreen mainScreen] bounds]];
+                              [[UIScreen mainScreen] bounds]
+                              context: self.eaglContext];
     
+    view.drawableColorFormat = GLKViewDrawableColorFormatRGB565;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     view.drawableStencilFormat = GLKViewDrawableStencilFormat8;
     
@@ -46,12 +52,8 @@ EGLView* current_view = NULL;
     view.delegate = self.appDelegate;
     
     self.view = view;
-    
-    GLKViewController* vc = nil;
-    
-    vc = [[GLKViewController alloc]
-          initWithNibName: nil
-          bundle:nil];
+
+    GLKViewController* vc = [[GLKViewController alloc] init];
     
     vc.view = view;
     vc.preferredFramesPerSecond = 60;
