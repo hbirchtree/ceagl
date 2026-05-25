@@ -15,13 +15,13 @@
 @interface EGLView : NSObject
 
 @property (retain) id<EGLAppDelegate> appDelegate;
-@property (retain) EAGLContext* eaglContext;
-@property (retain) GLKView* view;
+@property (retain) EAGLContext*       eaglContext;
+@property (retain) GLKView*           view;
 
-+ (EGLView*) createView;
++ (EGLView*)createView;
 
-- (BOOL) createContext: (uint32_t)contextVer;
-- (BOOL) createView;
+- (BOOL)createContext:(uint32_t)contextVer;
+- (BOOL)createView;
 
 @end
 
